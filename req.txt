@@ -1,0 +1,7 @@
+fastapi
+scikit-learn
+ollama
+uvicorn
+requests
+rank_bm25
+nltk
