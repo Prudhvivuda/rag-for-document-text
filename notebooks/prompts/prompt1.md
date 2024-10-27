@@ -1,0 +1,1 @@
+This prompt checks if it can answer how or which systems can unlock geothermal potential in with naturally low permeability.

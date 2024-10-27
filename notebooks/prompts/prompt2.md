@@ -1,0 +1,1 @@
+This prompt asks for something specific like the name of a solar panel instead of asking a summary.
