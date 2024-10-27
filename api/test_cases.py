@@ -1,16 +1,40 @@
 import requests
 
-def test_upload():
-    response = requests.post("http://0.0.0.0:5001/upload", json={"question": "What is renewable energy?"})
-    assert response.status_code == 200
+# define the url
+url = "http://0.0.0.0:5000"
 
-def test_evaluate():
-    response = requests.post("http://0.0.0.0:5001/evaluate", json={
-        "question": "Define renewable energy.",
-        "reference_answer": "Renewable energy comes from natural sources...",
-        "generated_answer": "Energy from natural resources..."
-    })
+# test function for upload functionality
+def test_upload():
+    response = requests.post(
+        f"{url}/upload"
+    )
     assert response.status_code == 200
+    print("Response: ", response.json())
     
-test_upload()
+# test function for query fucntionality
+def test_query():
+    response = requests.post(
+        f"{url}/query", 
+        json={
+            "question": "what is renewable energy?"
+        }
+    )
+    assert response.status_code == 200
+    print("Response: ", response.json())
+
+# test function for evaluate functionality
+def test_evaluate():
+    response = requests.post(
+        url=f"{url}/evaluate", 
+        json={
+            "question": "what is renewable energy?",
+            "reference_answer": "",
+            "generated_answer": ""
+        }
+    )
+    assert response.status_code == 200
+    print("Response: ", response.json())
+
+# calling the test functions
 test_evaluate()
+test_query()

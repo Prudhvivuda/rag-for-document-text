@@ -1,45 +1,46 @@
-# db/document_parser.py
-
 import os
 import json
-from zipfile import ZipFile
-from pathlib import Path
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import glob
+from zipfile import ZipFile
+from api.logging_config import logger
 
-# def parse_documents(zip_path="db/renewable-energy.zip", output_path="db/document_index.json"):
-#     index = {}
-#     document_texts = []
-#     document_ids = []
-    
-#     documents_folder = "db/energy_docs/renewable-energy"
-    
-#     with ZipFile(zip_path, 'r') as zip_ref:
-#         zip_ref.extractall(documents_folder)
-        
-#     for file_path in glob.glob(os.path.join(documents_folder, "*.txt")):
-#         print('helo')
-#         print(file_path)
-#         with open(file_path, 'r') as file:
-#             document_id = os.path.basename(file_path).split('.')[0]
-#             content = file.read()
-#             index[document_id] = content
-#             document_texts.append(content)
-#             document_ids.append(document_id)
-    
+def parse_documents():
+    """
+        It does two fuctions:
+        1. Unzip and extract the files.
+        2. To parse the documents and save the indexes in a file
+    """
+    # unzip and extract the files
+    with ZipFile("db/renewable-energy.zip", 'r') as ref:
+        logger.info("Extracting files in renewable-energy.zip")
+        ref.extractall("db/renewable-energy")
+        logger.info("Extraction done. Files extracted to db/renewable-energy")
 
-#     # Save index to JSON for easy loading during API requests
-#     with open(output_path, 'w') as out_file:
-#         json.dump({"index": index, "texts": document_texts, "ids": document_ids}, out_file)
+    logger.info("Parsing the documents...")
+    documents_folder = "db/renewable-energy/renewable-energy/"
 
-# if __name__ == "__main__":
-#     parse_documents()
+    # try block for exception handling 
+    try:
+        document_texts = {}
 
-def parse_documents(documents_folder):
-    document_texts = {}
-    for file_path in glob.glob(os.path.join(documents_folder, "*.txt")):
-        with open(file_path, 'r') as file:
-            doc_id = os.path.basename(file_path).split('.')[0]
-            document_texts[doc_id] = file.read()
-    return document_texts
+        # match the files with extension.txt and iterate each of them
+        for file_path in glob.glob(os.path.join(documents_folder, "*.txt")):
+
+            # open the file
+            with open(file_path, 'r') as file:
+                # retreive the doument id
+                document_id = os.path.basename(file_path).split('.')[0]
+                # read the contents of the file
+                document_texts[document_id] = file.read()
+
+    except Exception as e:
+        logger.error(f"Parsing failed. Encountered exception: {e}")
+
+    logger.info("Document ids and content created")
+
+    # save the document ids and its content in a json file
+    with open("db/document_ids_and_content.json", "w") as f:
+        json.dump(document_texts, f, indent=4)
+        logger.info("Index file strored at db/document_ids_and_content.json")
+
+    return "Documents parsed successfully"
